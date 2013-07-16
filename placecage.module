@@ -1,0 +1,64 @@
+<?php
+/**
+ * @file
+ * Integrates placecage.com with the dummyimage module.
+ */
+
+/**
+ * Implements hook_dummyimage_service().
+ */
+function placecage_dummyimage_service() {
+  return array(
+    'placecage' => array(
+      'title' => t('Placecage'),
+      'url' => 'http://placecage.com/',
+      'form builder' => placecage_form(),
+      'options' => placecage_options(),
+    ),
+  );
+}
+
+/**
+ * Form builder function for the placecage service.
+ */
+function placecage_form() {
+  $form = array();
+  $form['placecage'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Cages'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+  
+  $cage_options = array(
+    'calm' => 'Calm',
+    'g' => 'Gray',
+    'c' => 'CRAZY!',
+  );
+    
+  $form['placecage']['dummyimage_cage_mood'] = array(
+    '#type' => 'radios',
+    '#title' => t('What mood should Sir Nicholas Cage be in?'),
+    '#description' => t('Be careful attempting to change Nick Cage\'s mind.  You have been warned.'),
+    '#default_value' => variable_get('dummyimage_cage_mood', 'calm'),
+    '#options' => $cage_options,
+  );
+  
+  return $form;
+}
+
+/**
+ * Provides the generate callback for the placecage service.
+ */
+function placecage_options() {
+  # Store Cage's mood in a variable.  Be careful trying to contain Nick Cage's mood.
+  $cage_mood = variable_get('dummyimage_cage_mood', 'calm');
+  
+  return array(
+    'pattern' => 'http://placecage.com/%mood/%dimensions',
+    'separator' => '/',
+    'replacements' => array(
+      '%mood' => ($cage_mood != 'calm') ? $cage_mood : '',
+    ),
+  );
+}
